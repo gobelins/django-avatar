@@ -6,12 +6,11 @@ from django.utils.translation import ugettext as _
 from django.utils.hashcompat import md5_constructor
 from django.core.urlresolvers import reverse
 
-from django.contrib.auth.models import User
-
 from avatar.settings import (AVATAR_GRAVATAR_BACKUP, AVATAR_GRAVATAR_DEFAULT,
                              AVATAR_DEFAULT_SIZE)
 from avatar.util import get_primary_avatar, get_default_avatar_url, cache_result
 from avatar.models import Avatar
+from avatar.compat import User
 
 register = template.Library()
 

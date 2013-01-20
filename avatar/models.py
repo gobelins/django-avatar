@@ -9,17 +9,15 @@ from django.utils.hashcompat import md5_constructor
 from django.utils.encoding import smart_str
 from django.db.models import signals
 
-from django.contrib.auth.models import User
-
 try:
     from cStringIO import StringIO
 except ImportError:
-    from StringIO import StringIO
+    from StringIO import StringIO  # NOQA
 
 try:
     from PIL import Image
 except ImportError:
-    import Image
+    import Image  # NOQA
 
 try:
     from django.utils.timezone import now
@@ -32,6 +30,7 @@ from avatar.settings import (AVATAR_STORAGE_DIR, AVATAR_RESIZE_METHOD,
                              AVATAR_HASH_USERDIRNAMES, AVATAR_HASH_FILENAMES,
                              AVATAR_THUMB_QUALITY, AUTO_GENERATE_AVATAR_SIZES,
                              AVATAR_STORAGE)
+from avatar.compat import User
 
 avatar_storage = get_storage_class(AVATAR_STORAGE)()
 
@@ -64,6 +63,7 @@ def avatar_file_path(instance=None, filename=None, size=None, ext=None):
     tmppath.append(os.path.basename(filename))
     return os.path.join(*tmppath)
 
+
 def find_extension(format):
     format = format.lower()
 
@@ -72,11 +72,14 @@ def find_extension(format):
 
     return format
 
+
 class Avatar(models.Model):
     user = models.ForeignKey(User)
     primary = models.BooleanField(default=False)
     avatar = models.ImageField(max_length=1024,
-        upload_to=avatar_file_path, storage=avatar_storage, blank=True)
+                               upload_to=avatar_file_path,
+                               storage=avatar_storage,
+                               blank=True)
     date_uploaded = models.DateTimeField(default=now)
 
     def __unicode__(self):
