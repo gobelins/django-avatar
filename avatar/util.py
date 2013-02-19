@@ -1,12 +1,13 @@
 from django.conf import settings
 from django.core.cache import cache
 
-from django.contrib.auth.models import User
+from compat import User
 
 from avatar.settings import (AVATAR_DEFAULT_URL, AVATAR_CACHE_TIMEOUT,
                              AUTO_GENERATE_AVATAR_SIZES, AVATAR_DEFAULT_SIZE)
 
 cached_funcs = set()
+
 
 def get_cache_key(user_or_username, size, prefix):
     """
@@ -15,6 +16,7 @@ def get_cache_key(user_or_username, size, prefix):
     if isinstance(user_or_username, User):
         user_or_username = user_or_username.username
     return '%s_%s_%s' % (prefix, user_or_username, size)
+
 
 def cache_result(func):
     """
@@ -32,6 +34,7 @@ def cache_result(func):
         return cache.get(key) or cache_set(key, func(user, size))
     return cached_func
 
+
 def invalidate_cache(user, size=None):
     """
     Function to be called when saving or changing an user's avatars.
@@ -42,6 +45,7 @@ def invalidate_cache(user, size=None):
     for prefix in cached_funcs:
         for size in sizes:
             cache.delete(get_cache_key(user, size, prefix))
+
 
 def get_default_avatar_url():
     base_url = getattr(settings, 'STATIC_URL', None)
@@ -58,6 +62,7 @@ def get_default_avatar_url():
     elif not ends and not begins:
         return '%s/%s' % (base_url, AVATAR_DEFAULT_URL)
     return '%s%s' % (base_url, AVATAR_DEFAULT_URL)
+
 
 def get_primary_avatar(user, size=AVATAR_DEFAULT_SIZE):
     if not isinstance(user, User):
